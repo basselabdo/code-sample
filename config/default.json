@@ -1,0 +1,23 @@
+{
+  "hostname": "localhost",
+  "port": 3000,
+  "mongoDb": {
+    "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
+    "port": 27017,
+    "dbName": "ledn",
+    "dbUserName": "lednuser",
+    "dbPassword": "lednTestUser123!",
+    "accountsCollection": "accounts-large",
+    "transactionsCollection": "transactions-large"
+  },
+  "infra": {
+    "accounts": {
+      "source": "../input/accounts/accounts-api.json",
+      "largeSource": "../input/accounts/accounts-api-large.json"
+    },
+    "transactions": {
+      "source": "../input/transactions/transactions-api.json",
+      "largeSource": "../input/transactions/transactions-api-large.json"
+    }
+  }
+}

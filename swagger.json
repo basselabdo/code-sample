@@ -1,0 +1,253 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "A starting point to manage operation on Ledn Accounts with Express, TypeScript and NodeJS",
+    "version": "1.0.0",
+    "title": "LEDN Acounts Manager"
+  },
+  "host": "localhost:3000",
+  "schemes": [
+    "http"
+  ],
+  "paths": {
+    "/accounts": {
+      "get": {
+        "summary": "Gets Ledn Account by email",
+        "description": "Gets and fitlers Ledn accounts",
+        "operationId": "getAccountByEmail",
+        "parameters": [
+            {
+              "name": "userEmail",
+              "in": "query",
+              "required": true,
+              "type":"string",
+              "description": "filter by account's email"
+            }
+        ],
+        "responses": {
+            "200": {
+                "description": "successful operation",
+                "schema": {
+                    "$ref": "#/definitions/account"
+                }
+            },
+            "default": {
+                "description": "error",
+                "schema": {
+                    "$ref": "#/definitions/error"
+                }
+            }
+        }
+      }
+    },
+    "/accounts/{id}": {
+      "get": {
+        "summary": "Gets Ledn Account by Id",
+        "description": "Get Ledn account",
+        "operationId": "getAccountById",
+        "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "string"
+          }
+        ],
+        "responses": {
+            "200": {
+                "description": "successful operation",
+                "schema": {
+                    "$ref": "#/definitions/account"
+                }
+            },
+            "default": {
+                "description": "error",
+                "schema": {
+                    "$ref": "#/definitions/error"
+                }
+            }
+        }
+      },
+      "patch": {
+        "summary": "Update Ledn Account by Id",
+        "description": "Update Ledn account",
+        "operationId": "updateAccount",
+        "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "in": "body",
+              "name": "accountBody",
+              "description": "update account",
+              "required": true,
+              "schema": {
+                  "$ref": "#/definitions/updateAccount"
+              }
+            }
+        ],
+        "responses": {
+            "200": {
+                "description": "successful operation",
+                "schema": {
+                    "$ref": "#/definitions/account"
+                }
+            },
+            "default": {
+                "description": "error",
+                "schema": {
+                    "$ref": "#/definitions/error"
+                }
+            }
+        }
+      }
+    },
+    "/accounts/{id}/transactions": {
+      "post": {
+        "summary": "Crete account transaction",
+        "description": "creates a transaction for a Ledn account",
+        "operationId": "createTransaction",
+        "parameters": [
+            {
+              "in": "path",
+              "name": "id",
+              "required": true,
+              "type": "string"
+            },
+            {
+              "name": "transactionBody",
+              "in": "body",
+              "required": true,
+              "description": "Transaction's body",
+              "schema": {
+                "$ref": "#/definitions/createTransaction"
+              }
+            }
+        ],
+        "responses": {
+            "200": {
+                "description": "successful operation",
+                "schema": {
+                    "$ref": "#/definitions/transaction"
+                }
+            },
+            "default": {
+                "description": "error",
+                "schema": {
+                    "$ref": "#/definitions/error"
+                }
+            }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "accounts": {
+      "type": "object",
+      "properties": {
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/account"
+          }
+        }
+      }
+    },
+    "account": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "userEmail": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["ACTIVE", "LOCKED"]
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "balance": {
+          "type": "number"
+        }
+      }
+    },
+    "updateAccount": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["active", "locked"]
+        }
+      }
+    },
+    "transaction": {
+      "type": "object",
+      "properties": {
+        "_id": {
+          "type": "string"
+        },
+        "userEmail": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["send", "receive"]
+        },
+        "createdAt": {
+          "type": "string"
+        }
+      }
+    },
+    "createTransaction": {
+      "type": "object",
+      "properties": {
+        "userEmail": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "number"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["send", "receive"]
+        }
+      },
+      "required": ["userEmail", "amount", "type"]
+    },
+    "error": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              }
+            },
+            "required": ["code", "message"]
+          },
+          "minItems": 1
+        }
+      },
+      "required": ["errors"]
+    }
+  }
+}
+
