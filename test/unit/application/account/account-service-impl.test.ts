@@ -1,92 +1,235 @@
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import chai, { expect } from 'chai';
 import chaiAsPromised from 'chai-as-promised';
-import sinonChai from 'sinon-chai';
-import { createSandbox } from 'sinon';
 import AccountServiceImpl from '../../../../src/application/account/account-service-impl';
-
+import AccountRepositoryMock from '../../../mock/application/account/account-repository.mock';
+import TransactionRepositoryMock from '../../../mock/application/transaction/transaction-repository.mock';
 import {
-    AccountSearchCriteria,
-    LednAccount,
-    MFA
-} from '../../../../src/domain/ledn-account';
+    accountByIdGoodBalance,
+    accountByIdLowBalance,
+    accountByEmail,
+    accountById,
+    accountTransactions,
+    searchCriteriaEmail,
+    searchCriteriaId,
+    searchCriteriaIdLowBalance,
+    searchCriteriaIdWithNullReturn,
+    accountByIdLocked,
+    searchCriteriaIdLocked,
+    receiveTransaction,
+    succeededTransaction,
+    searchCriteriaIdCreatingTransaction,
+    sendTransaction,
+    accountByIdNoTransactions,
+    searchCriteriaIdWithoutTransactions
+} from './account-test-data';
 
-chai.use(chaiAsPromised);
 chai.use(sinonChai);
+chai.use(chaiAsPromised);
 
 describe('AccountServiceImpl', () => {
-    const lednAccounts: LednAccount[] = [
-        {
-            firstName: 'Emily',
-            lastName: 'Smith',
-            country: 'CA',
-            email: 'Rollin43@hotmail.com',
-            dob: '1967-05-05T13:14:32.526Z',
-            mfa: MFA.SMS,
-            amt: 962169704,
-            createdDate: '2020-08-15T20:07:24.157Z',
-            referredBy: null
-        },
-        {
-            firstName: 'Warren',
-            lastName: 'Emmerich',
-            country: 'CA',
-            email: 'Fabian.Wolf@yahoo.com',
-            dob: '1951-12-17T20:37:27.065Z',
-            mfa: MFA.TOTP,
-            amt: 397834067,
-            createdDate: '2020-08-29T03:58:45.274Z',
-            referredBy: null
-        },
-        {
-            firstName: 'Deion',
-            lastName: 'Doyle',
-            country: 'CA',
-            email: 'Lawrence.Stroman@yahoo.com',
-            dob: '1972-08-09T03:54:01.610Z',
-            mfa: MFA.SMS,
-            amt: 504277192,
-            createdDate: '2019-01-12T20:48:03.239Z',
-            referredBy: null
-        }
-    ];
-    const accountSearchCriteria: AccountSearchCriteria = {
-        country: 'CA',
-        mfa: 'SMS'
-    };
+    const sandbox = sinon.createSandbox();
+    const accountRepository = new AccountRepositoryMock(sandbox);
+    const transactionRepository = new TransactionRepositoryMock(sandbox);
     let accountServiveImpl: AccountServiceImpl;
-    const sandbox = createSandbox();
-    const accountRepository: any = {
-        getAccounts: sandbox.stub()
-    };
     beforeEach(() => {
-        accountServiveImpl = new AccountServiceImpl(accountRepository);
+        accountServiveImpl = new AccountServiceImpl(
+            accountRepository,
+            transactionRepository
+        );
     });
     afterEach(() => {
         sandbox.reset();
     });
-    describe('getAccounts', () => {
+
+    describe('getAccountBy', () => {
         describe('when operation is successful', () => {
             beforeEach(() => {
-                accountRepository.getAccounts
-                    .withArgs(accountSearchCriteria)
-                    .resolves(lednAccounts);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaEmail)
+                    .resolves(accountByEmail);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaId)
+                    .resolves(accountById);
+                transactionRepository.getAccountTransactions
+                    .withArgs({ userEmail: accountByEmail.userEmail })
+                    .resolves(accountTransactions);
+                transactionRepository.getAccountTransactions
+                    .withArgs({ userEmail: accountById.userEmail })
+                    .resolves(accountTransactions);
             });
-            it('should return success', async () => {
-                const result = await accountServiveImpl.getAccounts(
-                    accountSearchCriteria
+            it('should return success (get Account by email)', async () => {
+                const result = await accountServiveImpl.getAccountBy(
+                    searchCriteriaEmail
                 );
-                expect(result).to.eql(lednAccounts);
+                expect(result._id).to.eql(accountByEmail._id);
+            });
+            it('should return success (get Account by Id)', async () => {
+                const result = await accountServiveImpl.getAccountBy(
+                    searchCriteriaId
+                );
+                expect(result._id).to.eql(accountById._id);
             });
         });
-        describe('when operation fails!', () => {
-            const err = new Error('nop');
+        describe('when operation fails', () => {
             beforeEach(() => {
-                accountRepository.getAccounts.rejects(err);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaEmail)
+                    .resolves(null);
             });
-            it('should throw an error', () => {
+            it('should be rejected with an error', () => {
                 return expect(
-                    accountServiveImpl.getAccounts(accountSearchCriteria)
-                ).to.eventually.be.rejectedWith(Error, 'nop');
+                    accountServiveImpl.getAccountBy(searchCriteriaEmail)
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    'Account ({"userEmail":"basel@gmail.com"}) doest not exist!'
+                );
+            });
+        });
+    });
+    describe('updateAccount', () => {
+        describe('when operation is successful', () => {
+            beforeEach(() => {
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaEmail)
+                    .resolves(accountByEmail);
+                accountRepository.updateAccount
+                    .withArgs(searchCriteriaEmail, accountByEmail)
+                    .resolves(accountByEmail);
+            });
+            it('should return success operation', async () => {
+                const result = await accountServiveImpl.updateAccount(
+                    searchCriteriaEmail,
+                    accountByEmail
+                );
+                expect(result._id).to.eql(accountByEmail._id);
+            });
+        });
+        describe('when operation fails', () => {
+            beforeEach(() => {
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaEmail)
+                    .resolves(null);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaId)
+                    .resolves(accountById);
+                accountRepository.updateAccount
+                    .withArgs(searchCriteriaId, accountById)
+                    .rejects(accountById);
+            });
+            it('should be rejected with an error when account does not exist', () => {
+                return expect(
+                    accountServiveImpl.updateAccount(
+                        searchCriteriaEmail,
+                        accountByEmail
+                    )
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    'Error! Account does not exist!'
+                );
+            });
+            it('should be rejected with an error', () => {
+                return expect(
+                    accountServiveImpl.updateAccount(
+                        searchCriteriaEmail,
+                        accountByEmail
+                    )
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    'Error! Account does not exist!'
+                );
+            });
+        });
+    });
+    describe('createTransaction', () => {
+        describe('when operation is successful', () => {
+            beforeEach(() => {
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaIdCreatingTransaction)
+                    .resolves(accountByIdGoodBalance);
+                transactionRepository.getAccountTransactions
+                    .withArgs({ userEmail: accountByIdGoodBalance.userEmail })
+                    .resolves(accountTransactions);
+                transactionRepository.insertTransaction
+                    .withArgs(receiveTransaction)
+                    .resolves(succeededTransaction);
+            });
+            it('should return success operation', async () => {
+                const result = await accountServiveImpl.createTransaction(
+                    accountByIdGoodBalance._id,
+                    receiveTransaction
+                );
+                return expect(result.createdAt).to.not.eql(null);
+            });
+        });
+        describe('when operation fails', () => {
+            beforeEach(() => {
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaIdLowBalance)
+                    .resolves(accountByIdLowBalance);
+                transactionRepository.getAccountTransactions
+                    .withArgs({ userEmail: accountByIdLowBalance.userEmail })
+                    .withArgs({ userEmail: accountByIdLocked.userEmail })
+                    .resolves(accountTransactions);
+                transactionRepository.getAccountTransactions
+                    .withArgs({
+                        userEmail: accountByIdNoTransactions.userEmail
+                    })
+                    .resolves(null);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaIdWithoutTransactions)
+                    .resolves(accountByIdNoTransactions);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaIdLocked)
+                    .resolves(accountByIdLocked);
+                accountRepository.getAccountBy
+                    .withArgs(searchCriteriaIdWithNullReturn)
+                    .resolves(null);
+            });
+            it('should throw exception when account has low balance', () => {
+                return expect(
+                    accountServiveImpl.createTransaction(
+                        accountByIdLowBalance._id,
+                        sendTransaction
+                    )
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    'Error! Account balance can not be less than 0!'
+                );
+            });
+            it('should throw exception when account does not exist', () => {
+                return expect(
+                    accountServiveImpl.createTransaction(
+                        'id-123-null',
+                        sendTransaction
+                    )
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    'Failed creating transaction! Message: Error: Account ({"_id":"id-123-null"}) doest not exist!'
+                );
+            });
+            it('should throw exception when account is locked', () => {
+                return expect(
+                    accountServiveImpl.createTransaction(
+                        accountByIdLocked._id,
+                        sendTransaction
+                    )
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    `The Account is locked. Aborting creating transaction: ${sendTransaction}`
+                );
+            });
+            it('should throw exception when account has no transactions', () => {
+                return expect(
+                    accountServiveImpl.createTransaction(
+                        accountByIdNoTransactions._id,
+                        sendTransaction
+                    )
+                ).to.eventually.be.rejectedWith(
+                    Error,
+                    `Failed getting account transactions!`
+                );
             });
         });
     });

@@ -7,6 +7,7 @@ import {
 } from '../../domain/account';
 import TransactionRepository from '../transaction/transaction-repository';
 import { Transaction, TransactionType } from '../../domain/transaction';
+import _ from 'lodash';
 
 export default class AccountServiceImpl implements AccountService {
     public constructor(
@@ -22,14 +23,9 @@ export default class AccountServiceImpl implements AccountService {
             const account = await this.getAccountBy({
                 _id: accountId
             });
-            if (!account) {
-                throw new Error(
-                    `Error! Account with email ${transaction.userEmail} does not exist!`
-                );
-            }
             if (account.status === AccountStatus.LOCKED) {
                 throw new Error(
-                    `Error! The Account is locked. Aborting creating transaction: ${transaction}`
+                    `The Account is locked. Aborting creating transaction: ${transaction}`
                 );
             }
             const simulatedTransactionBalance =
@@ -44,7 +40,7 @@ export default class AccountServiceImpl implements AccountService {
             }
             return await this.transactionRepo.insertTransaction(transaction);
         } catch (error) {
-            throw new Error(`Error creating transaction! Message: ${error}`);
+            throw new Error(`Failed creating transaction! Message: ${error}`);
         }
     }
 
@@ -57,9 +53,7 @@ export default class AccountServiceImpl implements AccountService {
                 accountSearchCriteria
             );
             if (!acct) {
-                throw new Error(
-                    `Erroe! Account ${accountSearchCriteria._id} does not exist!`
-                );
+                throw new Error(`Error! Account does not exist!`);
             }
             return await this.accountRepo.updateAccount(
                 accountSearchCriteria,
@@ -76,23 +70,34 @@ export default class AccountServiceImpl implements AccountService {
         const account = await this.accountRepo.getAccountBy(
             accountsSearchCriteria
         );
-        const accountTransactions = await this.transactionRepo.getAccountTransactions(
-            { userEmail: account.userEmail }
-        );
-        let balance = 0;
-        accountTransactions.forEach(transaction => {
-            switch (transaction.type) {
-                case TransactionType.SEND: {
-                    balance -= transaction.amount;
-                    break;
+        if (!account) {
+            throw new Error(
+                `Account (${JSON.stringify(
+                    _.omitBy(accountsSearchCriteria, _.isNil)
+                )}) doest not exist!`
+            );
+        }
+        try {
+            const accountTransactions = await this.transactionRepo.getAccountTransactions(
+                { userEmail: account.userEmail }
+            );
+            let balance = 0;
+            accountTransactions.forEach(transaction => {
+                switch (transaction.type) {
+                    case TransactionType.SEND: {
+                        balance -= transaction.amount;
+                        break;
+                    }
+                    case TransactionType.RECEIVE: {
+                        balance += transaction.amount;
+                        break;
+                    }
                 }
-                case TransactionType.RECEIVE: {
-                    balance += transaction.amount;
-                    break;
-                }
-            }
-        });
-        account.balance = balance;
-        return account;
+            });
+            account.balance = balance;
+            return account;
+        } catch (error) {
+            throw new Error('Failed getting account transactions!');
+        }
     }
 }
