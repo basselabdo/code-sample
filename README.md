@@ -132,14 +132,15 @@ I hosted the Db in https://scalegrid.io/ so multiple team members may use the AP
     "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
     "port": 27017,
     "dbName": "ledn",
-    "dbUserName": "lednuser",
-    "dbPassword": "lednTestUser123!",
+    "dbUserName": "DB_USER",
+    "dbPassword": "DB_PASS",
     "accountsCollection": "accounts",
     "transactionsCollection": "transactions"
   }
 ```
-**NOTE:** The secrets are stored in the config file ONLY for dev and testing reasons and also because the repo is private. Otherwise, I would create a docker file to and add them as an ENV VARS and build an image of the repository.
-Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#L4) to target the local Db instead, and also each user (team member) will be having their own Db version.
+**NOTE:** The secrets are stored in the [.env](.env) file ONLY for dev and testing reasons and also because the repo is private. Otherwise, I would create a docker file to and add them as an ENV VARS and build an image of the repository.
+
+Another solution is downloading a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#L4) to target the local Db instead, and also each user (team member) will be having their own Db version.
 
 
 # Sample Runs

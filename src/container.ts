@@ -18,9 +18,11 @@ async function containerFactory(override: Container = {}): Promise<Container> {
     const mongoDbFactory: () => Promise<Db> = async () => {
         const mongoDbName: string = appConfig.get('mongoDb.dbName');
         const mongoClient = await MongoClient.connect(
-            `mongodb://${appConfig.get('mongoDb.dbUserName')}:${appConfig.get(
-                'mongoDb.dbPassword'
-            )}@${appConfig.get('mongoDb.hostname')}:${appConfig.get(
+            `mongodb://${
+                process.env[appConfig.get<string>('mongoDb.dbUserName')]
+            }:${
+                process.env[appConfig.get<string>('mongoDb.dbPassword')]
+            }@${appConfig.get('mongoDb.hostname')}:${appConfig.get(
                 'mongoDb.port'
             )}/${appConfig.get('mongoDb.dbName')}`
         );

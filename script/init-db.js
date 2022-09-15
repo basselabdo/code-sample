@@ -1,6 +1,7 @@
 const MongoClient = require('mongodb').MongoClient;
 const fs = require('fs');
 const config = require('../config/default.json');
+require('dotenv').config({ path: '../.env' })
 const dataFiles = [
     {
         path: config.data.accounts.source,
@@ -44,7 +45,7 @@ const getCollections = async function(lednDb) {
 }
 const validateDb = async function() {
     try {
-        const connectionString =  `mongodb://${config.mongoDb.dbUserName}:${config.mongoDb.dbPassword}@${config.mongoDb.hostname}:${config.mongoDb.port}/${config.mongoDb.dbName}`
+        const connectionString =  `mongodb://${process.env[config.mongoDb.dbUserName]}:${process.env[config.mongoDb.dbPassword]}@${config.mongoDb.hostname}:${config.mongoDb.port}/${config.mongoDb.dbName}`
         let mongoClient = new MongoClient(connectionString, { useUnifiedTopology:true });
         await mongoClient.connect();
         const lednDb = mongoClient.db(config.mongoDb.dbName);

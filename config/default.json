@@ -5,8 +5,8 @@
     "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
     "port": 27017,
     "dbName": "ledn",
-    "dbUserName": "lednuser",
-    "dbPassword": "lednTestUser123!",
+    "dbUserName": "DB_USER",
+    "dbPassword": "DB_PASS",
     "accountsCollection": "accounts",
     "transactionsCollection": "transactions"
   },
