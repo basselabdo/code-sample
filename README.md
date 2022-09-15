@@ -13,7 +13,7 @@ Inserted docs to accounts-large: 10000
 Inserted docs to transactions-large: 96757
 PS C:\Users\bassel\Desktop\ledn-challenge\script>
 ```
-**NOTE**: If you re-ran the [script](./script/init-db.js) again, the script will check first for the collections if they are alreasdy exist or not ([getCollections](./script/init-db.js#LN37)), and if the collections are already in MongoDb, then it will not overwrite them and show the following output:
+**NOTE**: If you re-ran the [script](./script/init-db.js) again, the script will check first for the collections if they are already exist or not ([getCollections](./script/init-db.js#L37)), and if the collections are already in MongoDb, then it will not overwrite them and show the following output:
 ```
 PS C:\Users\bassel\Desktop\ledn-challenge\script> node .\init-db.js
 Collection accounts already exists!
@@ -23,7 +23,7 @@ Collection transactions-large already exists!
 PS C:\Users\bassel\Desktop\ledn-challenge\script>
 ```
 
-Next, navigate back to the [root](./) folder and run the following commands sequentially:
+Next, navigate back to the root folder and run the following commands sequentially:
 
 `npm install` to install the needed dependencies
 
@@ -43,7 +43,7 @@ Action   | Endpoint              | Params
 
 2. Using any browser, open this [Url](http://localhost:3000/docs) to see the endpoints and the parameters required by each endpint, and also you can test it directly using the Url that refelcts what is defined in [swagger](swagger.json) file.
 
-<img src="./src-files/swagger-endpoints.png" alt="alt text" width="550" height="400">
+<img src="https://github.com/basselabdo/ledn-challenge/blob/main/src-files/swagger-endpoints.PNG" width="550" height="400">
 
 # Testing the code
 
