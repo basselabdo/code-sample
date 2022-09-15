@@ -95,6 +95,8 @@ Lines        : 100% ( 166/166 )
 # Solution
 I utilitzed my way of thinking in implementing the structure to make it well-structured and efficient as much as I could. I know that there could be a way better ways to do it :)
 
+I used Typescript as a light-weighted language to manage the Db operations. Its single threaded .. yes, but based on the usage and business needs, I see it good at the moment. When we the load grows, we can deploy more than one replica of the repository and put them behind a load-balancer to handle huge load of transactions.
+
 I built the structure in a way where I have the [application](./src/application) layer that is separate from the [persistance](./src/persistance/) layer, where I managed all the read/write operations from the MongoDb. The [application](./src/application) layer contains the account and transaction interface, service and respository.
 The implementation of the [account-repository](./src/application/account/account-repository.ts) is in [persistance](./src/persistance/account) folder. The file [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) implements the account respository interface.
 
@@ -122,9 +124,9 @@ I added a [configuration](./config) folder with [default.json](./config/default.
 
 I also added an interfaces in [domain](./src/domain) folder where I added [account](./src/domain/account.ts) and [transaction](./src/domain/transaction.ts) to easily parse and create objects from or into the Db.
 
-Database configuration, I decided to use MongoDb, since the relation in between `account` and `transactions` is not that complex and no need to make the solution more complexity. Also, I built the structure in a way where we need a minimum code change if we decided to chage the Db engine. i.e. changing the implementation of [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) and [mongo-transaction-repository-impl](./src/persistance/transaction/mongo-transaction-repository-impl.ts) only.
+Database configuration, I decided to use MongoDb, since the relation in between `account` and `transactions` is not that complex and no need to make the solution more complex. Also, I built the structure in a way where we need a minimum code change if we decided to chage the Db engine. i.e. when changing the engine from Mongo (NoSql) to Postgres as an exmaple, so the implementation of [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) and [mongo-transaction-repository-impl](./src/persistance/transaction/mongo-transaction-repository-impl.ts) needs to be changed only.
 
-I hosted the Db in https://scalegrid.io/ and also I added the configurations to it in [default.json](./config/default.json#L4) 
+I hosted the Db in https://scalegrid.io/ so multiple team members may use the API concurrently, and also I added the Db configurations in [default.json](./config/default.json#L4) 
 ```
 "mongoDb": {
     "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
@@ -137,7 +139,8 @@ I hosted the Db in https://scalegrid.io/ and also I added the configurations to 
   }
 ```
 **NOTE:** The secrets are stored in the config file ONLY for dev and testing reasons and also because the repo is private. Otherwise, I would create a docker file to and add them as an ENV VARS and build an image of the repository.
-Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#L4) to target the local Db instead.
+Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#L4) to target the local Db instead, and also each user (team member) will be having their own Db version.
+
 
 # Sample Runs
 * Getting an account by `userEmail`:
