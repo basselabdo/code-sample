@@ -142,7 +142,7 @@ Another solution is download a [mongoDb docker image](https://hub.docker.com/_/m
 # Sample Runs
 * Getting an account by `userEmail`:
     * Request:
-      ```json
+      ```
       curl -X 'GET' \
       'http://localhost:3000/accounts?userEmail=Benny93%40gmail.com' \
       -H 'accept: application/json'
@@ -184,7 +184,7 @@ Another solution is download a [mongoDb docker image](https://hub.docker.com/_/m
 * Updating the `status` field of an account:
   
   * Request:
-    ```json
+    ```
     curl -X 'PATCH' \
       'http://localhost:3000/accounts/632272e567a7265d517d960d' \
       -H 'accept: application/json' \
@@ -207,7 +207,7 @@ Another solution is download a [mongoDb docker image](https://hub.docker.com/_/m
     ```
 * Creating a `SEND` transaction to a `locked` account by `id`:
   * Request:
-    ```json
+    ```
     curl -X 'POST' \
       'http://localhost:3000/accounts/632272e567a7265d517d960d/transactions' \
       -H 'accept: application/json' \
@@ -231,7 +231,7 @@ Another solution is download a [mongoDb docker image](https://hub.docker.com/_/m
     ```
 * Creating `SEND` transaction to an `active` account by `id`:
   * Request:
-    ```json
+    ```
     curl -X 'POST' \
       'http://localhost:3000/accounts/632272e567a7265d517d960d/transactions' \
       -H 'accept: application/json' \
@@ -256,7 +256,7 @@ Another solution is download a [mongoDb docker image](https://hub.docker.com/_/m
     ```
 * Creating a `SEND` transaction where balance will be negative (simulated in [account-service-impl.ts](./src/application/account/account-service-impl.ts#L29)):
   * Request:
-    ```json
+    ```
     curl -X 'POST' \
       'http://localhost:3000/accounts/632272e567a7265d517d960d/transactions' \
       -H 'accept: application/json' \
