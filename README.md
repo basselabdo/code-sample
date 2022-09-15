@@ -99,7 +99,7 @@ I built the structure in a way where I have the [application](./src/application)
 The implementation of the [account-repository](./src/application/account/account-repository.ts) is in [persistance](./src/persistance/account) folder. The file [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) implements the account respository interface.
 
 
-I added a [configuration](./config) folder with [default.json](./config/default.json) in it, to make the paths to the files configurable and easier to be parsed in the [script](./script/init-db.js#LN3) code:
+I added a [configuration](./config) folder with [default.json](./config/default.json) in it, to make the paths to the files configurable and easier to be parsed in the [script](./script/init-db.js#L3) code:
 ```json
 {
   "data": {
@@ -124,7 +124,7 @@ I also added an interfaces in [domain](./src/domain) folder where I added [accou
 
 Database configuration, I decided to use MongoDb, since the relation in between `account` and `transactions` is not that complex and no need to make the solution more complexity. Also, I built the structure in a way where we need a minimum code change if we decided to chage the Db engine. i.e. changing the implementation of [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) and [mongo-transaction-repository-impl](./src/persistance/transaction/mongo-transaction-repository-impl.ts) only.
 
-I hoted the Db in https://scalegrid.io/ and also I added the configurations to it in [default.json](./config/default.json#LN4) 
+I hoted the Db in https://scalegrid.io/ and also I added the configurations to it in [default.json](./config/default.json#L4) 
 ```
 "mongoDb": {
     "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
@@ -137,4 +137,4 @@ I hoted the Db in https://scalegrid.io/ and also I added the configurations to i
   }
 ```
 **NOTE:** The secrets are stored in the config file ONLY for dev and testing reasons. I would create a docker file to and add them as an ENV VARS and build an image of the repository.
-Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#LN4) to target the local Db instead.
+Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#L4) to target the local Db instead.
