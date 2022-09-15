@@ -47,6 +47,7 @@ export default class AccountServiceImpl implements AccountService {
         account: Partial<Account>
     ): Promise<Partial<Account>> {
         try {
+            // checking if the account exists before updating.
             const acct = await this.accountRepo.getAccountBy(
                 accountSearchCriteria
             );
@@ -66,7 +67,7 @@ export default class AccountServiceImpl implements AccountService {
         accountsSearchCriteria?: AccountSearchCriteria
     ): Promise<Account> {
         const account = await this.accountRepo.getAccountBy(
-            accountsSearchCriteria
+            accountsSearchCriteria // this object has _id or userEmail to get the account by one of them
         );
         if (!account) {
             throw new Error(
@@ -79,7 +80,8 @@ export default class AccountServiceImpl implements AccountService {
             const accountTransactions = await this.transactionRepo.getAccountTransactions(
                 { userEmail: account.userEmail }
             );
-            let balance = 0;
+            let balance = 0; 
+            // calcualting the final balance of the account by getting the account's transactions and iterating through them to either (+) or (-) based on the transaction.type.
             accountTransactions.forEach(transaction => {
                 switch (transaction.type) {
                     case TransactionType.SEND: {

@@ -15,6 +15,6 @@ export enum AccountStatus {
 export interface AccountSearchCriteria {
     _id?: string;
     userEmail?: string;
-    status?: string;
-    sortField?: keyof Account;
+    status?: string; // optional field to filter accounts by (not used now, just in case if needed in the future)
+    sortField?: keyof Account; // optional field to sort accounts by (not used now, just in case if needed in the future)
 }

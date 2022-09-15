@@ -8,6 +8,8 @@ import swaggerDocument from '../swagger.json';
 import { Container } from './container';
 
 async function appFactory(container: Container) {
+
+    // getting the singeltons returned by the Container
     const {
         appConfig,
         jsonFormatter,

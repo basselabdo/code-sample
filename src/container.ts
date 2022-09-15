@@ -15,6 +15,7 @@ import errorHandler from './web/error-handler';
 async function containerFactory(override: Container = {}): Promise<Container> {
     const appConfig: Config = config;
     let mongoDb: Db;
+    // initializing MongoDb connection that returns a Db object
     const mongoDbFactory: () => Promise<Db> = async () => {
         const mongoDbName: string = appConfig.get('mongoDb.dbName');
         const mongoClient = await MongoClient.connect(
@@ -30,6 +31,8 @@ async function containerFactory(override: Container = {}): Promise<Container> {
             mongoDbName !== '' ? mongoClient.db(mongoDbName) : mongoClient.db();
         return mongoDb;
     };
+
+    // initializing Transaction Repo and Service
     const transactionRepository = new TransactionRepositoryImpl(
         await mongoDbFactory(),
         appConfig
@@ -37,7 +40,7 @@ async function containerFactory(override: Container = {}): Promise<Container> {
     const transactionService = new TransactionServiceImpl(
         transactionRepository
     );
-
+    // initializing Transaction Repo and Service
     const accountRepository = new AccountRepositoryImpl(
         await mongoDbFactory(),
         appConfig
