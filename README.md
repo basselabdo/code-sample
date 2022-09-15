@@ -163,7 +163,7 @@ Another solution is download a [mongoDb docker image](https://hub.docker.com/_/m
 * Getting an account by `id`:
 
   * Requset: 
-    ```json
+    ```
     curl -X 'GET' \
     'http://localhost:3000/accounts/632272e567a7265d517d960d' \
     -H 'accept: application/json'
