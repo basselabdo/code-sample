@@ -23,6 +23,8 @@ Collection transactions-large already exists!
 PS C:\Users\bassel\Desktop\ledn-challenge\script>
 ```
 
+Also, the `_id` field (for both, [account](./src/domain/account.ts#L2) and [transaction](./src/domain/transaction.ts#L4)) is auto generated each time after running the [script](./script/init-db.js) .. so, to start testing the endpoints, you can either get some emails from the [source files](./input/accounts/) or by installing a Db IDE like https://studio3t.com/ to view the contents of the collections. 
+
 Next, navigate back to the root folder and run the following commands sequentially:
 
 `npm install` to install the needed dependencies
