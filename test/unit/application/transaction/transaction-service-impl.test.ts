@@ -46,13 +46,13 @@ describe('TransactionServiceImpl', () => {
             beforeEach(() => {
                 transactionRepository.getAccountTransactions
                     .withArgs(transactionsSearchCriteriaFail)
-                    .resolves(null);
+                    .resolves(undefined);
             });
-            it('should return account transactions', async () => {
+            it('should return no transactions', async () => {
                 const res = await transactionServiveImpl.getAccountTransactions(
                     transactionsSearchCriteriaSuccess
                 );
-                return expect(res).to.eql(null);
+                return expect(res).to.eql(undefined);
             });
         });
     });
@@ -74,13 +74,13 @@ describe('TransactionServiceImpl', () => {
             beforeEach(() => {
                 transactionRepository.insertTransaction
                     .withArgs(sendTransactionFail)
-                    .resolves(null);
+                    .resolves(undefined);
             });
-            it('should return account transactions', async () => {
+            it('throw an error when inserting transaction', async () => {
                 const res = await transactionServiveImpl.insertTransaction(
                     sendTransactionFail
                 );
-                return expect(res).to.eql(null);
+                return expect(res).to.eql(undefined);
             });
         });
     });

@@ -19,6 +19,29 @@ export default class TransactionRepositoryImpl
         );
     }
 
+    private toTransactionEntity(transaction: Transaction): TransactionEntity {
+        let transactionEntity: TransactionEntity;
+        const { _id, createdAt, ...transactionObjct } = transaction;
+        transactionEntity = {
+            ...transactionObjct,
+            createdAt: new Date(),
+            _id: new ObjectId()
+        };
+        transactionEntity.type = transactionEntity.type.toLocaleLowerCase();
+        return transactionEntity;
+    }
+
+    private toTransaction(transaction: TransactionEntity): Transaction {
+        let transactionObject: Transaction;
+        const { _id, type, ...transactionEntity } = transaction;
+        transactionObject = {
+            ...transactionEntity,
+            type: (type as any) as TransactionType,
+            _id: _id.toString()
+        };
+        return transactionObject;
+    }
+
     async insertTransaction(transaction: Transaction): Promise<Transaction> {
         let transactionInsertResult: InsertOneResult<
             WithId<TransactionEntity>
@@ -29,13 +52,13 @@ export default class TransactionRepositoryImpl
                 transacationEntityObject
             );
             if (!transactionInsertResult.insertedId) {
-                throw new Error(
-                    `Error! failed inserting new transaction ${transaction}!`
-                );
+                throw new Error(`No insertedId!`);
             }
         } catch (error) {
             throw new Error(
-                `Failed to insert transaction ${transaction}, Message: ${error}`
+                `Failed to insert transaction ${JSON.stringify(
+                    transaction
+                )}, Message: ${error}`
             );
         }
         return this.toTransaction(transacationEntityObject);
@@ -59,28 +82,5 @@ export default class TransactionRepositoryImpl
                 )}, Error: ${error}`
             );
         }
-    }
-
-    private toTransactionEntity(transaction: Transaction): TransactionEntity {
-        let transactionEntity: TransactionEntity;
-        const { _id, createdAt, ...transactionObjct } = transaction;
-        transactionEntity = {
-            ...transactionObjct,
-            createdAt: new Date(),
-            _id: new ObjectId()
-        };
-        transactionEntity.type = transactionEntity.type.toLocaleLowerCase();
-        return transactionEntity;
-    }
-
-    private toTransaction(transaction: TransactionEntity): Transaction {
-        let transactionObject: Transaction;
-        const { _id, type, ...transactionEntity } = transaction;
-        transactionObject = {
-            ...transactionEntity,
-            type: (type as any) as TransactionType,
-            _id: _id.toString()
-        };
-        return transactionObject;
     }
 }

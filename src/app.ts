@@ -8,7 +8,12 @@ import swaggerDocument from '../swagger.json';
 import { Container } from './container';
 
 async function appFactory(container: Container) {
-    const { appConfig, jsonFormatter, accountHandler } = container;
+    const {
+        appConfig,
+        jsonFormatter,
+        errorHandler,
+        accountHandler
+    } = container;
 
     // Configurations
     const hostname = appConfig.get('hostname');
@@ -70,6 +75,7 @@ async function appFactory(container: Container) {
     app.post('/accounts/:id/transactions', (req, res, next) => {
         accountHandler.handleCreateTransaction(req, res, next);
     });
+    app.use(errorHandler);
     return app;
 }
 

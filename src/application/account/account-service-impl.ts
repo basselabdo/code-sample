@@ -24,9 +24,7 @@ export default class AccountServiceImpl implements AccountService {
                 _id: accountId
             });
             if (account.status === AccountStatus.LOCKED) {
-                throw new Error(
-                    `The Account is locked. Aborting creating transaction: ${transaction}`
-                );
+                throw new Error(`The Account is locked!`);
             }
             const simulatedTransactionBalance =
                 transaction.type === TransactionType.SEND

@@ -30,7 +30,6 @@ export default class AccountHandler {
             next(err);
         }
     }
-
     public async handleUpdateAccount(
         req: Request,
         res: Response & JsonFormatter,

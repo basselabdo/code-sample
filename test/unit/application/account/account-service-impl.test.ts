@@ -217,7 +217,7 @@ describe('AccountServiceImpl', () => {
                     )
                 ).to.eventually.be.rejectedWith(
                     Error,
-                    `The Account is locked. Aborting creating transaction: ${sendTransaction}`
+                    `The Account is locked!`
                 );
             });
             it('should throw exception when account has no transactions', () => {

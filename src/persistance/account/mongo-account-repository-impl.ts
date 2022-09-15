@@ -26,7 +26,7 @@ export default class AccountRepositoryImpl implements AccountRepository {
         return obj;
     }
     private buildMongoQuery(accountSearchCriteria: AccountSearchCriteria) {
-        const { _id, sortField, ...rest } = accountSearchCriteria;
+        const { _id, ...rest } = accountSearchCriteria;
         const query: any = flattenObject(rest);
         query._id = _id ? new ObjectId(_id) : undefined;
         return _.omitBy(query, _.isNil);

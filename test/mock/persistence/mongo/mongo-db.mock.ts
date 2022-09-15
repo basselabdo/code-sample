@@ -13,6 +13,19 @@ export class MongoCollectionMock extends BaseMock<Collection> {
     }
 }
 
+class Cursor {
+    toArray() {
+        return;
+    }
+}
+
+export class MongoCursorMock extends BaseMock<Cursor> {
+    toArray: SinonStub;
+
+    constructor(sandbox: SinonSandbox) {
+        super(sandbox, ['toArray']);
+    }
+}
 export class MongoClientMock extends BaseMock<MongoClient> {
     db: SinonStub;
     constructor(sandbox: SinonSandbox) {

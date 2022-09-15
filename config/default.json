@@ -7,8 +7,8 @@
     "dbName": "ledn",
     "dbUserName": "lednuser",
     "dbPassword": "lednTestUser123!",
-    "accountsCollection": "accounts-large",
-    "transactionsCollection": "transactions-large"
+    "accountsCollection": "accounts",
+    "transactionsCollection": "transactions"
   },
   "infra": {
     "accounts": {

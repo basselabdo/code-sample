@@ -10,6 +10,7 @@ import TransactionServiceImpl from './application/transaction/transaction-servic
 export interface Container {
     [key: string]: any;
 }
+import errorHandler from './web/error-handler';
 
 async function containerFactory(override: Container = {}): Promise<Container> {
     const appConfig: Config = config;
@@ -49,6 +50,7 @@ async function containerFactory(override: Container = {}): Promise<Container> {
     return {
         appConfig,
         jsonFormatter: jsonFormatter(),
+        errorHandler: errorHandler(),
         accountHandler
     };
 }
