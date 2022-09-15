@@ -14,7 +14,6 @@ export default class AccountHandler {
         next: NextFunction
     ): Promise<void> {
         try {
-            // extracting the query parameters
             const { userEmail }: AccountSearchCriteria = req.query;
             const _id = req.params.id;
             const accountSearchCriteria: AccountSearchCriteria = {
@@ -22,9 +21,8 @@ export default class AccountHandler {
                 userEmail
             };
             const account = await this.accountService.getAccountBy(
-                _.omitBy(accountSearchCriteria, _.isNil) // removing the fields with null/undefined values from accountSearchCriteria
+                _.omitBy(accountSearchCriteria, _.isNil)
             );
-            // calling formattedJson to format the response and encapsulate it with data bag
             res.formattedJson(undefined, account);
         } catch (err) {
             next(err);
@@ -44,7 +42,6 @@ export default class AccountHandler {
                 searchCriteria,
                 account
             );
-            // calling formattedJson to format the response and encapsulate it with data bag
             res.formattedJson(undefined, result);
         } catch (err) {
             next(err);
@@ -62,7 +59,6 @@ export default class AccountHandler {
                 _id,
                 transaction
             );
-            // calling formattedJson to format the response and encapsulate it with data bag
             res.formattedJson(undefined, result);
         } catch (err) {
             next(err);

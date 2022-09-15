@@ -15,7 +15,6 @@ async function appFactory(container: Container) {
         accountHandler
     } = container;
 
-    // Configurations
     const hostname = appConfig.get('hostname');
     const port = appConfig.get('port');
 

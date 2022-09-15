@@ -1,6 +1,29 @@
 # Running the Code
 
-navigate to root folder and run the following commands:
+First, navigate to the [script](./script) folder and run the following command to run the code in this [file](./script/init-db.js):
+
+`node .\init-db.js` 
+
+The previous command is used to initialize the Db (mongoDb) with the files provided in the [input](./input/) folder, and you should have an output like this:
+```
+PS C:\Users\bassel\Desktop\ledn-challenge\script> node .\init-db.js
+Inserted docs to accounts: 100
+Inserted docs to transactions: 916
+Inserted docs to accounts-large: 10000
+Inserted docs to transactions-large: 96757
+PS C:\Users\bassel\Desktop\ledn-challenge\script>
+```
+**NOTE**: If you re-ran the [script](./script/init-db.js) again, the script will check first for the collections if they are alreasdy exist or not ([getCollections](./script/init-db.js#LN37)), and if the collections are already in MongoDb, then it will not overwrite them and show the following output:
+```
+PS C:\Users\bassel\Desktop\ledn-challenge\script> node .\init-db.js
+Collection accounts already exists!
+Collection accounts-large already exists!
+Collection transactions already exists!
+Collection transactions-large already exists!
+PS C:\Users\bassel\Desktop\ledn-challenge\script>
+```
+
+Next, navigate back to the [root](./) folder and run the following commands sequentially:
 
 `npm install` to install the needed dependencies
 
@@ -9,80 +32,109 @@ navigate to root folder and run the following commands:
 `npm run start` to start the server
 
 After building and running the code, you can either: 
-1. Use postman to test it by making a `GET` call to this endpoint http://localhost:3000/accounts and add the needed parameters to the url (i.e. http://localhost:3000/accounts?country=ca&sortField=amt)
-2. Using any browser, navigate to the [swagger](swagger.json) file to see the endpoint and the parameters it requires [Url](http://localhost:3000/docs)
+1. Use postman to test it, by making calls to this endpoint http://localhost:3000/ as following:
 
-To filter by `country` or `mfa`, it will accept both, upper or lower case values and it will skip the fields with `null` value. Also, when filtering by `name` I searched for th value in `firstName` and `lastName` fields of the account because, technically, the term `name` is combination of `first` and `last` name combined together.
+Action   | Endpoint              | Params
+-------- | ----------------------|------------
+`GET`    | http://localhost:3000/accounts      | `userEmail`: string (required)
+`GET`    | http://localhost:3000/accounts/{id} | `id`: string (required)
+`PATCH`  | http://localhost:3000/accounts/{id} | `id`: string (required), body: `{"status": "active" or"locked"}` (required) }
+`POST`   |   http://localhost:3000/accounts/{id}/transactions           | body: `{"userEmail":"string","amount": 0,"type": "send"}` (required)
+
+2. Using any browser, open this [Url](http://localhost:3000/docs) to see the endpoints and the parameters required by each endpint, and also you can test it directly using the Url that refelcts what is defined in [swagger](swagger.json) file.
+
+<img src="./src-files/swagger-endpoints.png" alt="alt text" width="550" height="400">
+
 # Testing the code
 
-run the following command to run the unit tests:
+Run the following command to run the unit tests:
 
 `npm run test`
 
+The output will look like this:
+
+```js
+  51 passing (143ms)
+
+---------------------------------------|----------|----------|----------|----------|-------------------|
+File                                   |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
+---------------------------------------|----------|----------|----------|----------|-------------------|
+All files                              |      100 |      100 |      100 |      100 |                   |
+ application/account                   |      100 |      100 |      100 |      100 |                   |
+  account-service-impl.ts              |      100 |      100 |      100 |      100 |                   |
+ application/transaction               |      100 |      100 |      100 |      100 |                   |
+  transaction-service-impl.ts          |      100 |      100 |      100 |      100 |                   |
+ common/error                          |      100 |      100 |      100 |      100 |                   |
+  app-error.ts                         |      100 |      100 |      100 |      100 |                   |
+  error-to-json-object.ts              |      100 |      100 |      100 |      100 |                   |
+ common/logger                         |      100 |      100 |      100 |      100 |                   |
+  app-logger-locator.ts                |      100 |      100 |      100 |      100 |                   |
+ common/utils                          |      100 |      100 |      100 |      100 |                   |
+  utils.ts                             |      100 |      100 |      100 |      100 |                   |
+ domain                                |      100 |      100 |      100 |      100 |                   |
+  account.ts                           |      100 |      100 |      100 |      100 |                   |
+  transaction.ts                       |      100 |      100 |      100 |      100 |                   |
+ persistance/account                   |      100 |      100 |      100 |      100 |                   |
+  mongo-account-repository-impl.ts     |      100 |      100 |      100 |      100 |                   |
+ persistance/transaction               |      100 |      100 |      100 |      100 |                   |
+  mongo-transaction-repository-impl.ts |      100 |      100 |      100 |      100 |                   |
+ web                                   |      100 |      100 |      100 |      100 |                   |
+  account-handler.ts                   |      100 |      100 |      100 |      100 |                   |
+  error-handler.ts                     |      100 |      100 |      100 |      100 |                   |
+  json-formatter.ts                    |      100 |      100 |      100 |      100 |                   |
+---------------------------------------|----------|----------|----------|----------|-------------------|
+
+=============================== Coverage summary ===============================
+Statements   : 100% ( 172/172 )
+Branches     : 100% ( 40/40 )
+Functions    : 100% ( 43/43 )
+Lines        : 100% ( 166/166 )
+================================================================================
+```
 
 # Solution
 I utilitzed my way of thinking in implementing the structure to make it well-structured and efficient as much as I could. I know that there could be a way better ways to do it :)
 
-I built the structure in a way where I have the [application](./src/application) layer that is separate from the [infra](./src/infra) layer, where I managed all the read operation from the files [accounts](./input/accounts.json) [large-accounts](./input/accounts_large.json). The [application](./src/application/account) layer contains the account interface, service, respository.
-The implementation of the [account-repository](./src/application/account/account-repository.ts) is in [infra](./src/infra/account) folder. The file [account-repository-impl](./src/infra/account/account-repository-impl.ts) implements the account respository interface.
+I built the structure in a way where I have the [application](./src/application) layer that is separate from the [persistance](./src/persistance/) layer, where I managed all the read/write operations from the MongoDb. The [application](./src/application) layer contains the account and transaction interface, service and respository.
+The implementation of the [account-repository](./src/application/account/account-repository.ts) is in [persistance](./src/persistance/account) folder. The file [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) implements the account respository interface.
 
 
-I added a [configuration](./config) folder with [default.json](./config/default.json) in it, to make the paths to the files configurable and easier to be parsed in the code:
+I added a [configuration](./config) folder with [default.json](./config/default.json) in it, to make the paths to the files configurable and easier to be parsed in the [script](./script/init-db.js#LN3) code:
 ```json
 {
-    "account": {
-      "src": "./input/accounts.json",
-      "large-src": "./input/accounts_large.json"
+  "data": {
+    "accounts": {
+      "source": "../input/accounts/accounts-api.json",
+      "largeSource": "../input/accounts/accounts-api-large.json"
+    },
+    "transactions": {
+      "source": "../input/transactions/transactions-api.json",
+      "largeSource": "../input/transactions/transactions-api-large.json"
     }
+  }
 }
 ```
-**NOTE**: To run the code against the small json [file](./input/accounts.json) -> simply go to this [line](./src/infra/account/account-repository-impl.ts#L17) and make it 
-```ts
-const jsonPath = this.appConfig.get<string>('infra.account.src');
-```
-or, to parse the big [file](./input/accounts_large.json) change it to:
-```ts
-const jsonPath = this.appConfig.get<string>('infra.account.large-src');
+**NOTE**: To run the solution against the big collections (accounts-large, transactions-large) -> simply go to lines [10](./config/default.json#L10) and [11](./config/default.json#L11) in [default.json](./config/default.json) and change them to: 
+```json
+"accountsCollection": "accounts-large",
+"transactionsCollection": "transactions-large"
 ```
 
-I also added an interface in [domain](./src/domain) folder to easily parse the json files into the defined interface [LednAccount](./src/domain/ledn-account.ts).
+I also added an interfaces in [domain](./src/domain) folder where I added [account](./src/domain/account.ts) and [transaction](./src/domain/transaction.ts) to easily parse and create objects from or into the Db.
 
-# Benchmarking
-With the solution I applied, processing the json [files](./input) took (including the filter and sort):
-- [accounts.json](./input/accounts.json)
-   ```ts
-   Elapsed time to parse 200 entries: 0.044 seconds
-   ```
-- [accounts_large.json](./input/accounts_large.json)
-  ```ts
-  Elapsed time to parse 100200 entries: 2.311 seconds
-   ```
-# Improvements
-- Adding pagination to make it more efficient
-- I can think of adding more validators to validate the query `parameters` and their values deinfed in the swagger [file](swagger.json#L18), I already did define `enums` in ([mfa](swagger.json#L31) and [sortField](swagger.json#L47) query parameter) and tried to be strict a bit, but this also can be improved on the codebase level.
-- Adding more unit tests to handle more edge cases in the test. The current coverage is:
-```ts
-  19 passing (58ms)
+Database configuration, I decided to use MongoDb, since the relation in between `account` and `transactions` is not that complex and no need to make the solution more complexity. Also, I built the structure in a way where we need a minimum code change if we decided to chage the Db engine. i.e. changing the implementation of [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) and [mongo-transaction-repository-impl](./src/persistance/transaction/mongo-transaction-repository-impl.ts) only.
 
------------------------------|----------|----------|----------|----------|-------------------|
-File                         |  % Stmts | % Branch |  % Funcs |  % Lines | Uncovered Line #s |
------------------------------|----------|----------|----------|----------|-------------------|
-All files                    |      100 |    96.15 |      100 |      100 |                   |
- application/account         |      100 |      100 |      100 |      100 |                   |
-  account-service-impl.ts    |      100 |      100 |      100 |      100 |                   |
- domain                      |      100 |      100 |      100 |      100 |                   |
-  ledn-account.ts            |      100 |      100 |      100 |      100 |                   |
- infra/account               |      100 |    94.44 |      100 |      100 |                   |
-  account-repository-impl.ts |      100 |    94.44 |      100 |      100 |                84 |
- web                         |      100 |      100 |      100 |      100 |                   |
-  account-handler.ts         |      100 |      100 |      100 |      100 |                   |
-  json-formatter.ts          |      100 |      100 |      100 |      100 |                   |
------------------------------|----------|----------|----------|----------|-------------------|
-
-=============================== Coverage summary ===============================
-Statements   : 100% ( 58/58 )
-Branches     : 96.15% ( 25/26 )
-Functions    : 100% ( 18/18 )
-Lines        : 100% ( 57/57 )
-================================================================================
+I hoted the Db in https://scalegrid.io/ and also I added the configurations to it in [default.json](./config/default.json#LN4) 
 ```
+"mongoDb": {
+    "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
+    "port": 27017,
+    "dbName": "ledn",
+    "dbUserName": "lednuser",
+    "dbPassword": "lednTestUser123!",
+    "accountsCollection": "accounts",
+    "transactionsCollection": "transactions"
+  }
+```
+**NOTE:** The secrets are stored in the config file ONLY for dev and testing reasons. I would create a docker file to and add them as an ENV VARS and build an image of the repository.
+Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#LN4) to target the local Db instead.

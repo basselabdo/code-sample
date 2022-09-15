@@ -10,7 +10,7 @@
     "accountsCollection": "accounts",
     "transactionsCollection": "transactions"
   },
-  "infra": {
+  "data": {
     "accounts": {
       "source": "../input/accounts/accounts-api.json",
       "largeSource": "../input/accounts/accounts-api-large.json"

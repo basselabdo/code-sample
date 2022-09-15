@@ -3,22 +3,22 @@ const fs = require('fs');
 const config = require('../config/default.json');
 const dataFiles = [
     {
-        path: config.infra.accounts.source,
+        path: config.data.accounts.source,
         collection: 'accounts',
         status: 'notAvailable'
     },
     {
-        path: config.infra.accounts.largeSource,
+        path: config.data.accounts.largeSource,
         collection: 'accounts-large',
         status: 'notAvailable'
     },
     {
-        path: config.infra.transactions.source,
+        path: config.data.transactions.source,
         collection: 'transactions',
         status: 'notAvailable'
     },
     {
-        path: config.infra.transactions.largeSource,
+        path: config.data.transactions.largeSource,
         collection: 'transactions-large',
         status: 'notAvailable'
     }
