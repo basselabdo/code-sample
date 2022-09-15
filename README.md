@@ -32,7 +32,7 @@ Next, navigate back to the root folder and run the following commands sequential
 `npm run start` to start the server
 
 After building and running the code, you can either: 
-1. Use postman to test it, by making calls to this endpoint http://localhost:3000/ as following:
+1. Use postman to test it, by making calls to this endpoint http://localhost:3000/ by loading the attached [Postman collection](./postman-collection/LednAccount-Manager.postman_collection.json) in [postman-collection](./postman-collection/):
 
 Action   | Endpoint              | Params
 -------- | ----------------------|------------
@@ -124,7 +124,7 @@ I also added an interfaces in [domain](./src/domain) folder where I added [accou
 
 Database configuration, I decided to use MongoDb, since the relation in between `account` and `transactions` is not that complex and no need to make the solution more complexity. Also, I built the structure in a way where we need a minimum code change if we decided to chage the Db engine. i.e. changing the implementation of [mongo-account-repository-impl](./src/persistance/account/mongo-account-repository-impl.ts) and [mongo-transaction-repository-impl](./src/persistance/transaction/mongo-transaction-repository-impl.ts) only.
 
-I hoted the Db in https://scalegrid.io/ and also I added the configurations to it in [default.json](./config/default.json#L4) 
+I hosted the Db in https://scalegrid.io/ and also I added the configurations to it in [default.json](./config/default.json#L4) 
 ```
 "mongoDb": {
     "hostname": "SG-gifted-dibble-7473-53944.servers.mongodirector.com",
@@ -136,5 +136,145 @@ I hoted the Db in https://scalegrid.io/ and also I added the configurations to i
     "transactionsCollection": "transactions"
   }
 ```
-**NOTE:** The secrets are stored in the config file ONLY for dev and testing reasons. I would create a docker file to and add them as an ENV VARS and build an image of the repository.
+**NOTE:** The secrets are stored in the config file ONLY for dev and testing reasons and also because the repo is private. Otherwise, I would create a docker file to and add them as an ENV VARS and build an image of the repository.
 Another solution is download a [mongoDb docker image](https://hub.docker.com/_/mongo) and running it locally instead of targetting the deployed Db in https://scalegrid.io/. But, in this case the configs. needs to be chagned in [here](./config/default.json#L4) to target the local Db instead.
+
+# Sample Runs
+* Getting an account by `userEmail`:
+    * Request:
+      ```json
+      curl -X 'GET' \
+      'http://localhost:3000/accounts?userEmail=Benny93%40gmail.com' \
+      -H 'accept: application/json'
+      ```
+    * Response: (it will contain balance field, that has been calculated in [account-service-impl.ts](./src/application/account/account-service-impl.ts#L82) as reqeusted by getting all the transactions for the account by `userEmail` field: 
+      ```json
+      {
+      "data": {
+        "_id": "632272e567a7265d517d960d",
+        "userEmail": "Benny93@gmail.com",
+        "status": "active",
+        "createdAt": "2019-06-10T15:17:14.967Z",
+        "updatedAt": "2019-06-10T15:17:14.967Z",
+        "balance": 26954
+        }
+      }
+      ```
+* Getting an account by `id`:
+
+  * Requset: 
+    ```json
+    curl -X 'GET' \
+    'http://localhost:3000/accounts/632272e567a7265d517d960d' \
+    -H 'accept: application/json'
+    ```
+  * Response: (it will contain balance field, that has been calculated in [account-service-impl.ts](./src/application/account/account-service-impl.ts#L82) as reqeusted by getting all the transactions for the account by `id` field: 
+    ```json
+      {
+      "data": {
+        "_id": "632272e567a7265d517d960d",
+        "userEmail": "Benny93@gmail.com",
+        "status": "active",
+        "createdAt": "2019-06-10T15:17:14.967Z",
+        "updatedAt": "2019-06-10T15:17:14.967Z",
+        "balance": 26954
+        }
+      }
+    ```
+* Updating the `status` field of an account:
+  
+  * Request:
+    ```json
+    curl -X 'PATCH' \
+      'http://localhost:3000/accounts/632272e567a7265d517d960d' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "status": "locked"
+    }'
+    ```
+  * After Running the request:
+    ```json
+    {
+      "data": {
+        "_id": "632272e567a7265d517d960d",
+        "userEmail": "Benny93@gmail.com",
+        "status": "locked",
+        "createdAt": "2019-06-10T15:17:14.967Z",
+        "updatedAt": "2022-09-15T03:20:57.418Z"
+      }
+    }
+    ```
+* Creating a `SEND` transaction to a `locked` account by `id`:
+  * Request:
+    ```json
+    curl -X 'POST' \
+      'http://localhost:3000/accounts/632272e567a7265d517d960d/transactions' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "userEmail": "Benny93@gmail.com",
+      "amount": 1000,
+      "type": "send"
+    }'
+    ```
+  * Response (error message):
+    ```json
+      {
+      "errors": [
+        {
+          "code": "Error",
+          "message": "Failed creating transaction! Message: Error: The Account is locked!"
+        }
+      ]
+    }
+    ```
+* Creating `SEND` transaction to an `active` account by `id`:
+  * Request:
+    ```json
+    curl -X 'POST' \
+      'http://localhost:3000/accounts/632272e567a7265d517d960d/transactions' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "userEmail": "Benny93@gmail.com",
+      "amount": 1000,
+      "type": "send"
+    }'
+    ```
+  * Response: 
+    ```json
+    {
+      "data": {
+        "userEmail": "Benny93@gmail.com",
+        "amount": 1000,
+        "createdAt": "2022-09-15T03:28:44.846Z",
+        "type": "send",
+        "_id": "63229bececb16ed2598578a8"
+      }
+    }
+    ```
+* Creating a `SEND` transaction where balance will be negative (simulated in [account-service-impl.ts](./src/application/account/account-service-impl.ts#L29)):
+  * Request:
+    ```json
+    curl -X 'POST' \
+      'http://localhost:3000/accounts/632272e567a7265d517d960d/transactions' \
+      -H 'accept: application/json' \
+      -H 'Content-Type: application/json' \
+      -d '{
+      "userEmail": "Benny93@gmail.com",
+      "amount": 30000,
+      "type": "send"
+    }'
+    ```
+  * Response:
+    ```json
+    {
+      "errors": [
+        {
+          "code": "Error",
+          "message": "Failed creating transaction! Message: Account balance can not be less than 0!"
+        }
+      ]
+    }
+    ```

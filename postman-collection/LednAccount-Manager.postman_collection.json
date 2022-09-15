@@ -1,0 +1,113 @@
+{
+	"info": {
+		"_postman_id": "14bd7094-c257-4747-94ca-931fa679b4cb",
+		"name": "LednAccount-Manager",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Account by userEmail",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/accounts?userEmail=Benny93%40gmail.com",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"accounts"
+					],
+					"query": [
+						{
+							"key": "userEmail",
+							"value": "Benny93%40gmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Account by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/accounts/632272e567a7265d517d960d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"accounts",
+						"632272e567a7265d517d960d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Account status",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"status\": \"locked\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/accounts/632272e567a7265d517d960d",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"accounts",
+						"632272e567a7265d517d960d"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create user transaction",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"userEmail\": \"Benny93@gmail.com\",\r\n  \"amount\": 30000,\r\n  \"type\": \"send\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/accounts/632272e567a7265d517d960d/transactions",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"accounts",
+						"632272e567a7265d517d960d",
+						"transactions"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
