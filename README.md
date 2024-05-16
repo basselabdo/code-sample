@@ -6,21 +6,21 @@ First, navigate to the [script](./script) folder and run the following command t
 
 The previous command is used to initialize the Db (mongoDb) with the files provided in the [input](./input/) folder, and you should have an output like this:
 ```
-PS C:\Users\bassel\Desktop\ledn-challenge\script> node .\init-db.js
+PS C:\Users\bassel\Desktop\code-sample\script> node .\init-db.js
 Inserted docs to accounts: 100
 Inserted docs to transactions: 916
 Inserted docs to accounts-large: 10000
 Inserted docs to transactions-large: 96757
-PS C:\Users\bassel\Desktop\ledn-challenge\script>
+PS C:\Users\bassel\Desktop\code-sample\script>
 ```
 **NOTE**: If you re-ran the [script](./script/init-db.js) again, the script will check first for the collections if they are already exist or not ([getCollections](./script/init-db.js#L37)), and if the collections are already in MongoDb, then it will not overwrite them and show the following output:
 ```
-PS C:\Users\bassel\Desktop\ledn-challenge\script> node .\init-db.js
+PS C:\Users\bassel\Desktop\code-sample\script> node .\init-db.js
 Collection accounts already exists!
 Collection accounts-large already exists!
 Collection transactions already exists!
 Collection transactions-large already exists!
-PS C:\Users\bassel\Desktop\ledn-challenge\script>
+PS C:\Users\bassel\Desktop\code-sample\script>
 ```
 
 Also, the `_id` field (for both, [account](./src/domain/account.ts#L2) and [transaction](./src/domain/transaction.ts#L4)) is auto generated each time after running the [script](./script/init-db.js) .. so, to start testing the endpoints, you can either get some emails from the [source files](./input/accounts/) or by installing a Db IDE like https://studio3t.com/ to view the contents of the collections. 
@@ -45,7 +45,7 @@ Action   | Endpoint              | Params
 
 2. Using any browser, open this [Url](http://localhost:3000/docs) to see the endpoints and the parameters required by each endpint, and also you can test it directly using the Url that refelcts what is defined in [swagger](swagger.json) file.
 
-<img src="https://github.com/basselabdo/ledn-challenge/blob/main/src-files/swagger-endpoints.PNG" width="550" height="400">
+<img src="https://github.com/basselabdo/code-sample/blob/main/src-files/swagger-endpoints.PNG" width="550" height="400">
 
 # Testing the code
 
